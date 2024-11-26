@@ -41,7 +41,7 @@
       e.preventDefault();
       if (input.value) {
         const clientOffset = `${socket.id}-${counter++}`;
-        socket.emit('chat message', input.value, clientOffset);
+        socket.emit('chat message', window.location.host + ": " + input.value, clientOffset);
         input.value = '';
       }
     });
