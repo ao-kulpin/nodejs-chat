@@ -1,5 +1,7 @@
 import express from 'express';
-import { createServer } from 'node:http';
+import http from 'node:http';
+import https from 'node:https';
+import fs  from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Server } from 'socket.io';
@@ -10,6 +12,10 @@ import { availableParallelism } from 'node:os';
 //import { createAdapter, setupPrimary } from '@socket.io/cluster-adapter';
 
 console.log('server starts...')
+
+const argv = process.argv;
+const protocol = argv.length < 3 ? "http": argv[2];
+const port = argv.length < 4 ? 80 : parseInt(argv[3]);
 
 //if (cluster.isPrimary) {
 //  const numCPUs = availableParallelism();
@@ -34,8 +40,18 @@ console.log('server starts...')
     );
   `);
 
+  const options = {
+    key: fs.readFileSync(
+        "privateKey.key"
+    ),
+    cert: fs.readFileSync(
+        "certificate.crt"
+    ),
+  };
+
+
   const app = express();
-  const server = createServer(app);
+  const server = (protocol == "https" ? https: http).createServer(options, app);
   const io = new Server(server, {
     connectionStateRecovery: {},
     /////////// adapter: createAdapter()
@@ -80,9 +96,9 @@ console.log('server starts...')
   });
 
 //////////  const port = process.env.PORT;
-  const port = 8088;
+///////  const port = 8088;
 
   server.listen(port, () => {
-    console.log(`server running at http://localhost:${port}`);
+    console.log(`server running at ${protocol}://localhost:${port}`);
   });
 ///////}
