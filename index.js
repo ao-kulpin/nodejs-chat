@@ -42,10 +42,10 @@ const port = argv.length < 4 ? 80 : parseInt(argv[3]);
 
   const options = {
     key: fs.readFileSync(
-        "privateKey.key"
+        "certbot/akulpin2.ru/privkey.pem"
     ),
     cert: fs.readFileSync(
-        "certificate.crt"
+        "certbot/akulpin2.ru/fullchain.pem"
     ),
   };
 
@@ -53,7 +53,7 @@ const port = argv.length < 4 ? 80 : parseInt(argv[3]);
   const app = express();
   const __dirname = dirname(fileURLToPath(import.meta.url));
   app.use(express.static(__dirname, { dotfiles: 'allow' } ));
-  
+
   const server = (protocol == "https" ? https: http).createServer(options, app);
   const io = new Server(server, {
     connectionStateRecovery: {},
