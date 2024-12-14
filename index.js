@@ -11,7 +11,7 @@ import { availableParallelism } from 'node:os';
 //import cluster from 'node:cluster';
 //import { createAdapter, setupPrimary } from '@socket.io/cluster-adapter';
 
-console.log('server starts...')
+console.log('server starts...');
 
 const argv = process.argv;
 const protocol = argv.length < 3 ? "http": argv[2];
@@ -51,13 +51,14 @@ const port = argv.length < 4 ? 80 : parseInt(argv[3]);
 
 
   const app = express();
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  app.use(express.static(__dirname, { dotfiles: 'allow' } ));
+  
   const server = (protocol == "https" ? https: http).createServer(options, app);
   const io = new Server(server, {
     connectionStateRecovery: {},
     /////////// adapter: createAdapter()
   });
-
-  const __dirname = dirname(fileURLToPath(import.meta.url));
 
   app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'index.html'));
